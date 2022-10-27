@@ -43,13 +43,22 @@ const securityCodePattern = {
 }
 const maskedSecurityPattern = IMask(securityCode, securityCodePattern)
 
-const cardNumber = document.querySelector("card-number")
+const cardNumber = document.querySelector("#card-number")
 const cardNumberPattern = {
   mask: [
     {
       mask: "0000 0000 0000 0000",
-      regex: /^4\d{0,15}/,
+      regEx: /^4\d{0,15}/,
       cardtype: "visa",
+    },
+    {
+      mask: "0000 0000 0000 0000",
+      regEx: /(^5[1-5]\d{0,2}|^22[2-9]\d|^2[3-7]\d{0,2})\d{0,12}/,
+      cardtype: "mastercard",
+    },
+    {
+      mask: "0000 0000 0000 0000",
+      cardtype: "default",
     },
   ],
 }
