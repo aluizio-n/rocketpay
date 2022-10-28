@@ -39,7 +39,7 @@ const maskedExpiration = IMask(expirationDate, expirationDatePattern)
 
 const securityCode = document.querySelector("#security-code")
 const securityCodePattern = {
-  mask: "0000",
+  mask: "000",
 }
 const maskedSecurityPattern = IMask(securityCode, securityCodePattern)
 
@@ -60,7 +60,60 @@ const cardNumberPattern = {
       mask: "0000 0000 0000 0000",
       cardtype: "default",
     },
+    {
+      mask: "0000 0000 0000 0000",
+      regex: /^8\d{0,15}/,
+      cardtype: "nubank",
+    },
   ],
+  dispatch: function (appended, dynamicMasked) {
+    const number = (dynamicMasked.value + appended).replace(/\D/g, "")
+    const foundMask = dynamicMasked.compiledMasks.find(function (item) {
+      return number.match(item.regex)
+    })
+
+    return foundMask
+  },
 }
 
 const maskedCardNumber = IMask(cardNumber, cardNumberPattern)
+
+document.querySelector("form").addEventListener("submit", (event) => {
+  event.preventDefault()
+})
+
+const cardHolder = document.querySelector("#card-holder")
+cardHolder.addEventListener("input", () => {
+  const ccHolder = document.querySelector(".cc-holder .value")
+
+  ccHolder.innerText =
+    cardHolder.value.length === 0 ? "FULANO DA SILVA" : cardHolder.value
+})
+
+securityCode.addEventListener("input", () => {
+  const ccSecurity = document.querySelector(".cc-security .value")
+
+  ccSecurity.innerText =
+    securityCode.value.length === 0 ? "123" : securityCode.value
+})
+
+maskedExpiration.on("accept", () => {
+  updateExpirationDate(maskedExpiration.value)
+})
+
+function updateExpirationDate(date) {
+  const ccExpiration = document.querySelector(".cc-extra .value")
+
+  ccExpiration.innerText = date.length === 0 ? "02/32" : date
+}
+
+maskedCardNumber.on("accept", () => {
+  const cardType = maskedCardNumber.masked.currentMask.cardtype
+  setCardType(cardType)
+  updateCardNumber(maskedCardNumber.value)
+})
+
+function updateCardNumber(number) {
+  const ccNumber = document.querySelector(".cc-number")
+  ccNumber.innerText = number.length === 0 ? "1234 5678 9012 3456" : number
+}
